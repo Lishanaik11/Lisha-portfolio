@@ -1,0 +1,32 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #101010;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #101010;
+  color: white;
+  overflow-x: hidden;
+}
+
+button,
+a {
+  cursor: pointer;
+}
+
+::selection {
+  background: #b45cff;
+  color: white;
+}
