@@ -22,7 +22,6 @@ import {
   GraduationCap,
   ShoppingBag,
   CheckCircle2,
-  Clock3,
 } from "lucide-react";
 
 type Project = {

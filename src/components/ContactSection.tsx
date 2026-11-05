@@ -20,7 +20,6 @@ import {
   GitHub,
   LinkedIn,
   Email,
-  Send,
   ArrowOutward,
   ArrowForward,
   CloseRounded,
