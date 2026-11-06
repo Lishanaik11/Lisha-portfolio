@@ -21,13 +21,13 @@ const semesters = [
   { name: "Semester 2", sgpa: "9.14" },
   { name: "Semester 3", sgpa: "9.64" },
   { name: "Semester 4", sgpa: "9.82" },
-  { name: "Semester 5", sgpa: "Awaited", pending: true },
+ { name: "Semester 5", sgpa: "10.00", highlight: true },
 ];
 
 // Circular CGPA Display
 function CgpaRing() {
   const circumference = 2 * Math.PI * 72;
-  const progress = (9.58 / 10) * circumference;
+  const progress = (9.67 / 10) * circumference;
 
   return (
     <Box
@@ -101,7 +101,7 @@ function CgpaRing() {
               lineHeight: 1,
             }}
           >
-            9.58
+            9.67
           </Typography>
 
           <Typography
@@ -433,50 +433,68 @@ export default function EducationSection() {
                 >
                   {semesters.map((semester, index) => (
                     <Box key={semester.name}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          gap: 2,
-                          px: { xs: 2, md: 3 },
-                          py: 2,
-                          bgcolor:
-                            index % 2 === 0
-                              ? "rgba(255,255,255,0.035)"
-                              : "transparent",
-                        }}
-                      >
-                        <Typography
-                          sx={{
-                            color: "#ddd",
-                            fontSize: "15px",
-                          }}
-                        >
-                          {semester.name}
-                        </Typography>
+                    <Box
+  sx={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 2,
+    px: { xs: 2, md: 3 },
+    py: 2,
+    background: semester.highlight
+      ? "linear-gradient(100deg, rgba(180,92,255,0.16), rgba(229,198,139,0.10))"
+      : index % 2 === 0
+        ? "rgba(255,255,255,0.035)"
+        : "transparent",
+    borderLeft: semester.highlight
+      ? "3px solid #e5c68b"
+      : "3px solid transparent",
+  }}
+>
+  <Typography
+    sx={{
+      color: semester.highlight ? "#fff" : "#ddd",
+      fontSize: "15px",
+      fontWeight: semester.highlight ? 700 : 400,
+    }}
+  >
+    {semester.name}
+  </Typography>
 
-                        {semester.pending ? (
-                          <Chip
-                            label="Result Awaited"
-                            size="small"
-                            sx={{
-                              bgcolor: "rgba(229,198,139,0.12)",
-                              color: "#e5c68b",
-                            }}
-                          />
-                        ) : (
-                          <Typography
-                            sx={{
-                              color: "#d4a9ff",
-                              fontSize: "19px",
-                              fontWeight: 700,
-                            }}
-                          >
-                            {semester.sgpa}
-                          </Typography>
-                        )}
-                      </Box>
+  {semester.highlight ? (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 1.5,
+        flexWrap: "wrap",
+        justifyContent: "flex-end",
+      }}
+    >
+
+      <Typography
+        sx={{
+          color: "#e5c68b",
+          fontSize: "22px",
+          fontWeight: 800,
+          textShadow: "0 0 18px rgba(229,198,139,0.3)",
+        }}
+      >
+        10.00
+      </Typography>
+    </Box>
+  ) : (
+    <Typography
+      sx={{
+        color: "#d4a9ff",
+        fontSize: "19px",
+        fontWeight: 700,
+      }}
+    >
+      {semester.sgpa}
+    </Typography>
+  )}
+</Box>
 
                       {index !== semesters.length - 1 && (
                         <Divider
