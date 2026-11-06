@@ -1,3 +1,4 @@
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -9,10 +10,23 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: process.env.CLIENT_URL,
-  methods: ["GET", "POST"]
-}));
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST"],
+  })
+);
 
 app.use(express.json({ limit: "10kb" }));
 
@@ -21,14 +35,14 @@ const contactLimiter = rateLimit({
   limit: 5,
   message: {
     success: false,
-    message: "Too many messages. Please try again later."
-  }
+    message: "Too many messages. Please try again later.",
+  },
 });
 
 app.get("/", (req, res) => {
   res.json({
     success: true,
-    message: "Portfolio Contact API is running."
+    message: "Portfolio Contact API is running.",
   });
 });
 
@@ -40,7 +54,7 @@ app.post("/api/contact", contactLimiter, async (req, res) => {
     if (website) {
       return res.status(200).json({
         success: true,
-        message: "Message sent successfully."
+        message: "Message sent successfully.",
       });
     }
 
@@ -48,11 +62,11 @@ app.post("/api/contact", contactLimiter, async (req, res) => {
     if (!name || !email || !subject || !message) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required."
+        message: "All fields are required.",
       });
     }
 
-    // Input validation
+    // Clean inputs
     const cleanName = String(name).trim();
     const cleanEmail = String(email).trim();
     const cleanSubject = String(subject).trim();
@@ -66,7 +80,7 @@ app.post("/api/contact", contactLimiter, async (req, res) => {
     ) {
       return res.status(400).json({
         success: false,
-        message: "One or more fields exceed the allowed length."
+        message: "One or more fields exceed the allowed length.",
       });
     }
 
@@ -75,7 +89,7 @@ app.post("/api/contact", contactLimiter, async (req, res) => {
     if (!emailRegex.test(cleanEmail)) {
       return res.status(400).json({
         success: false,
-        message: "Please enter a valid email address."
+        message: "Please enter a valid email address.",
       });
     }
 
@@ -83,8 +97,8 @@ app.post("/api/contact", contactLimiter, async (req, res) => {
       service: "gmail",
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
+        pass: process.env.EMAIL_PASS,
+      },
     });
 
     await transporter.sendMail({
@@ -99,24 +113,29 @@ Subject: ${cleanSubject}
 
 Message:
 ${cleanMessage}
-      `
+      `,
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "Your message has been sent successfully!"
+      message: "Your message has been sent successfully!",
     });
-
   } catch (error) {
     console.error("Contact API Error:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: "Unable to send your message. Please try again."
+      message: "Unable to send your message. Please try again.",
     });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Local development only
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+// Vercel deployment
+export default app;
